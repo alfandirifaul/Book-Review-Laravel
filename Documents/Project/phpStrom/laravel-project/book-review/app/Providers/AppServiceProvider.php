@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Cache\RateLiming\Limit;
+use RateLimiter;
+use Request;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        RateLimiter::for('reviews', function(Request $request){
+            return Limit::perHour(3)->by($request->user()?->id ?: $request->ip());
+        });
     }
 }
